@@ -129,7 +129,7 @@ func (m *Middleware) ProcessMessages(ctx context.Context, messages []*schema.Mes
 	}
 
 	// Split messages into blocks
-	systemMsgs, userMsgs, summaryMsgs, toolBlocks := m.splitMessages(messages, msgsToken)
+	_, _, _, toolBlocks := m.splitMessages(messages, msgsToken)
 
 	// Split into recent and older within token budget, from newest to oldest
 	var recentBlocks []messageBlock

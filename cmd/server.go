@@ -17,6 +17,7 @@ import (
 	"github.com/fourhu/eino-ai-agent/internal/logger"
 	"github.com/fourhu/eino-ai-agent/internal/mcp"
 	"github.com/fourhu/eino-ai-agent/internal/memory"
+	"github.com/fourhu/eino-ai-agent/internal/summarization"
 )
 
 var (
@@ -175,6 +176,16 @@ func runServer(cmd *cobra.Command, args []string) error {
 		SystemPrompt: cfg.Agent.SystemPrompt,
 		MaxSteps:     cfg.Agent.MaxSteps,
 		MemoryStore:  memStore,
+	}
+
+	// Add summarization config if enabled
+	if cfg.Summarization.Enabled {
+		agentConfig.Summarization = &summarization.Config{
+			MaxTokensBeforeSummary:     cfg.Summarization.MaxTokensBeforeSummary,
+			MaxTokensForRecentMessages: cfg.Summarization.MaxTokensForRecentMessages,
+			Model:                      chatModel,
+		}
+		logger.Info("Conversation summarization enabled")
 	}
 
 	aiAgent, err := agent.NewAgent(ctx, agentConfig)

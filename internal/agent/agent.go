@@ -14,6 +14,7 @@ import (
 
 	"github.com/fourhu/eino-ai-agent/internal/logger"
 	"github.com/fourhu/eino-ai-agent/internal/memory"
+	"github.com/fourhu/eino-ai-agent/internal/summarization"
 )
 
 // Config is the agent configuration
@@ -24,6 +25,8 @@ type Config struct {
 	MaxSteps     int
 	MaxHistory   int
 	MemoryStore  memory.Store
+	// Summarization config, nil means disabled
+	Summarization *summarization.Config
 }
 
 // Session represents a conversation session
@@ -35,11 +38,12 @@ type Session struct {
 
 // Agent is a multi-turn conversation ReAct agent
 type Agent struct {
-	config      *Config
-	agent       *react.Agent
-	sessions    map[string]*Session
-	sessionMu   sync.RWMutex
-	memoryStore memory.Store
+	config            *Config
+	agent             *react.Agent
+	sessions          map[string]*Session
+	sessionMu         sync.RWMutex
+	memoryStore       memory.Store
+	summaryMiddleware *summarization.Middleware
 }
 
 // NewAgent creates a new ReAct agent
@@ -65,12 +69,28 @@ func NewAgent(ctx context.Context, config *Config) (*Agent, error) {
 		logger.Debug("Using in-memory session store")
 	}
 
-	return &Agent{
+	a := &Agent{
 		config:      config,
 		agent:       agent,
 		sessions:    make(map[string]*Session),
 		memoryStore: store,
-	}, nil
+	}
+
+	// Initialize summarization middleware if configured
+	if config.Summarization != nil {
+		// Use the same model for summarization if not specified
+		if config.Summarization.Model == nil {
+			config.Summarization.Model = config.Model
+		}
+		summaryMiddleware, err := summarization.New(ctx, config.Summarization)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create summarization middleware: %w", err)
+		}
+		a.summaryMiddleware = summaryMiddleware
+		logger.Info("Summarization middleware enabled")
+	}
+
+	return a, nil
 }
 
 // GetOrCreateSession gets or creates a session
@@ -137,8 +157,19 @@ func (a *Agent) Chat(ctx context.Context, sessionID string, userMessage string) 
 		session.Messages = append([]*schema.Message{session.Messages[0]}, session.Messages[len(session.Messages)-a.config.MaxHistory*2:]...)
 	}
 
+	// Apply summarization if enabled
+	messages := session.Messages
+	if a.summaryMiddleware != nil {
+		processedMsgs, err := a.summaryMiddleware.ProcessMessages(ctx, messages)
+		if err != nil {
+			logger.Warnf("Summarization failed: %v, using original messages", err)
+		} else {
+			messages = processedMsgs
+		}
+	}
+
 	// Run agent
-	response, err := a.agent.Generate(ctx, session.Messages)
+	response, err := a.agent.Generate(ctx, messages)
 	if err != nil {
 		return nil, fmt.Errorf("agent generate failed: %w", err)
 	}
@@ -170,11 +201,22 @@ func (a *Agent) ChatStream(ctx context.Context, sessionID string, userMessage st
 		session.Messages = append([]*schema.Message{session.Messages[0]}, session.Messages[len(session.Messages)-a.config.MaxHistory*2:]...)
 	}
 
+	// Apply summarization if enabled
+	messages := session.Messages
+	if a.summaryMiddleware != nil {
+		processedMsgs, err := a.summaryMiddleware.ProcessMessages(ctx, messages)
+		if err != nil {
+			logger.Warnf("Summarization failed: %v, using original messages", err)
+		} else {
+			messages = processedMsgs
+		}
+	}
+
 	// Persist user message
 	a.persistSession(ctx, sessionID, session.Messages)
 
 	// Stream response
-	streamReader, err := a.agent.Stream(ctx, session.Messages)
+	streamReader, err := a.agent.Stream(ctx, messages)
 	if err != nil {
 		return nil, fmt.Errorf("agent stream failed: %w", err)
 	}

@@ -72,6 +72,20 @@ agent:
     # system_prompt: You are a helpful AI assistant with access to various tools through MCP servers.
 
     max_steps: 20
+
+# Conversation summarization configuration
+# When enabled, automatically summarizes conversation history when token count exceeds threshold
+# This helps prevent context window overflow in long conversations
+summarization:
+    # Enable/disable conversation summarization
+    enabled: false
+    # Token threshold to trigger summarization (default: 2000)
+    # When total tokens exceed this value, older messages will be summarized
+    max_tokens_before_summary: 2000
+    # Token budget reserved for recent messages after summarization (default: 500)
+    # Recent messages within this budget are kept as-is for context continuity
+    max_tokens_for_recent_messages: 500
+
 log:
     level: debug
 memory:

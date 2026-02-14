@@ -14,12 +14,13 @@ import (
 
 // Config represents the server configuration
 type Config struct {
-	Server ServerConfig `json:"server" yaml:"server"`
-	Model  ModelConfig  `json:"model" yaml:"model"`
-	MCP    MCPConfig    `json:"mcp" yaml:"mcp"`
-	Agent  AgentConfig  `json:"agent" yaml:"agent"`
-	Log    LogConfig    `json:"log" yaml:"log"`
-	Memory MemoryConfig `json:"memory" yaml:"memory"`
+	Server        ServerConfig        `json:"server" yaml:"server"`
+	Model         ModelConfig         `json:"model" yaml:"model"`
+	MCP           MCPConfig           `json:"mcp" yaml:"mcp"`
+	Agent         AgentConfig         `json:"agent" yaml:"agent"`
+	Log           LogConfig           `json:"log" yaml:"log"`
+	Memory        MemoryConfig        `json:"memory" yaml:"memory"`
+	Summarization SummarizationConfig `json:"summarization" yaml:"summarization"`
 }
 
 // ServerConfig represents HTTP server configuration
@@ -53,6 +54,13 @@ type AgentConfig struct {
 	SystemPrompt string `json:"system_prompt" yaml:"system_prompt"`
 	MaxSteps     int    `json:"max_steps" yaml:"max_steps"`
 	MaxHistory   int    `json:"max_history" yaml:"max_history"` // Max conversation rounds to keep (0 = unlimited)
+}
+
+// SummarizationConfig represents conversation summarization configuration
+type SummarizationConfig struct {
+	Enabled                    bool `json:"enabled" yaml:"enabled"`
+	MaxTokensBeforeSummary     int  `json:"max_tokens_before_summary" yaml:"max_tokens_before_summary"`           // Token threshold to trigger summarization
+	MaxTokensForRecentMessages int  `json:"max_tokens_for_recent_messages" yaml:"max_tokens_for_recent_messages"` // Token budget for recent messages after summarization
 }
 
 // LogConfig represents logging configuration
