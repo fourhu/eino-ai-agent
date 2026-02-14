@@ -8,6 +8,7 @@ require (
 	github.com/cloudwego/eino-ext/components/model/openai v0.1.8
 	github.com/cloudwego/eino-ext/components/tool/mcp v0.0.8
 	github.com/cloudwego/hertz v0.10.4
+	github.com/eino-contrib/jsonschema v1.0.3
 	github.com/google/uuid v1.6.0
 	github.com/hertz-contrib/sse v0.1.0
 	github.com/mark3labs/mcp-go v0.43.2
@@ -31,7 +32,6 @@ require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
-	github.com/eino-contrib/jsonschema v1.0.3 // indirect
 	github.com/evanphx/json-patch v0.5.2 // indirect
 	github.com/frankban/quicktest v1.14.6 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect

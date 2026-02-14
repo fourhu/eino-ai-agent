@@ -52,7 +52,7 @@ func init() {
 	rootCmd.AddCommand(clientCmd)
 	clientCmd.Flags().StringVarP(&clientServerURL, "server", "s", "http://localhost:8000", "Server URL")
 	clientCmd.Flags().StringVarP(&clientSession, "session", "n", "", "Session ID (auto-generated if not provided)")
-	clientCmd.Flags().StringVarP(&clientModel, "model", "m", "glm-4.7", "Model name")
+	clientCmd.Flags().StringVarP(&clientModel, "model", "m", "gpt-5.1", "Model name")
 }
 
 var clientCmd = &cobra.Command{

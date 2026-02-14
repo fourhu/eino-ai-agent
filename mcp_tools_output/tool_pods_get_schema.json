@@ -1,0 +1,16 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "description": "Name of the Pod",
+      "type": "string"
+    },
+    "namespace": {
+      "description": "Namespace to get the Pod from",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

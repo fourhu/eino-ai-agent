@@ -3,9 +3,9 @@ server:
     port: 8000
 model:
     provider: openai
-    base_url: http://localhost:3000/v1
+    base_url: http://localhost:4141/v1
     api_key: sk-iDgNga7t3drabdm61111E05a2a154017AcA014D6118c525a # local one-api key
-    model: glm-4.7
+    model: gpt-5.1
 mcp:
     servers:
         - name: kubernetes-mcp-server

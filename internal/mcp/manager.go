@@ -9,6 +9,8 @@ import (
 
 	mcptool "github.com/cloudwego/eino-ext/components/tool/mcp"
 	"github.com/cloudwego/eino/components/tool"
+	"github.com/cloudwego/eino/schema"
+	"github.com/eino-contrib/jsonschema"
 	"github.com/mark3labs/mcp-go/client"
 	"github.com/mark3labs/mcp-go/mcp"
 
@@ -117,6 +119,18 @@ func (m *Manager) connectServer(ctx context.Context, cfg ServerConfig) error {
 			logger.Warnf("[MCP:%s] Failed to get tool info: %v", cfg.Name, err)
 			continue
 		}
+
+		// Fix schema: ensure properties exists for OpenAI compatibility
+		if info.ParamsOneOf != nil {
+			if jsonSchema, err := info.ParamsOneOf.ToJSONSchema(); err == nil {
+				if jsonSchema.Properties == nil {
+					jsonSchema.Properties = jsonschema.NewProperties()
+					info.ParamsOneOf = schema.NewParamsOneOfByJSONSchema(jsonSchema)
+					logger.Debugf("[MCP:%s] Fixed schema for tool: %s (added empty properties)", cfg.Name, info.Name)
+				}
+			}
+		}
+
 		m.toolMap[info.Name] = t
 		m.tools = append(m.tools, t)
 

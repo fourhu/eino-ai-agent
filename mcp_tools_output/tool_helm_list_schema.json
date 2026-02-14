@@ -1,0 +1,13 @@
+{
+  "type": "object",
+  "properties": {
+    "all_namespaces": {
+      "description": "If true, lists all Helm releases in all namespaces ignoring the namespace argument (Optional)",
+      "type": "boolean"
+    },
+    "namespace": {
+      "description": "Namespace to list Helm releases from (Optional, all namespaces if not provided)",
+      "type": "string"
+    }
+  }
+}

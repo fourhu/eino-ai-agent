@@ -1,0 +1,9 @@
+{
+  "type": "object",
+  "properties": {
+    "namespace": {
+      "description": "Optional Namespace to retrieve the events from. If not provided, will list events from all namespaces",
+      "type": "string"
+    }
+  }
+}

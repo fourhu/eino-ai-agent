@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "description": "Name of the node to get stats from",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}
